@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="bn">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>কথন — Bangla Auto Caption</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2716%27 fill=%27%236d4aff%27/%3E%3Ctext x=%2732%27 y=%2745%27 font-size=%2738%27 text-anchor=%27middle%27 fill=%27white%27 font-family=%27sans-serif%27%3EK%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header class="top">
+    <div class="brand"><span class="logo">ক</span><div><b>কথন</b><small>ভিডিওতে অটো বাংলা ক্যাপশন</small></div></div>
+    <button id="btn-new" class="ghost" hidden>＋ নতুন ভিডিও</button>
+  </header>
+
+  <main>
+    <div id="error" class="banner error" role="alert" hidden>
+      <span id="error-text"></span><button id="error-close" class="x" aria-label="Close">✕</button>
+    </div>
+
+    <!-- 1. UPLOAD -->
+    <section id="view-upload" class="card">
+      <h2>১. ভিডিও আপলোড করো</h2>
+      <label id="drop" class="drop" tabindex="0">
+        <input id="file" type="file" accept="video/*,.mp4,.mov,.m4v,.webm,.mkv,.avi,.3gp" hidden>
+        <div class="drop-icon">🎬</div>
+        <div><b>ভিডিও ফাইল এখানে ড্রপ করো</b> অথবা ক্লিক করে বাছাই করো</div>
+        <div class="muted" id="limits">…</div>
+      </label>
+      <details class="adv">
+        <summary>Model (Advanced)</summary>
+        <select id="model"></select>
+        <p class="muted" id="model-note"></p>
+      </details>
+      <p class="muted small">Tip: ভিডিওতে পরিষ্কার কথা থাকলে ফলাফল বেশি ভালো হয়। ব্যাকগ্রাউন্ড মিউজিক বেশি জোরে থাকলে ভুল বাড়ে।</p>
+    </section>
+
+    <!-- 2. PROGRESS -->
+    <section id="view-progress" class="card" hidden>
+      <h2 id="progress-title">প্রসেস হচ্ছে…</h2>
+      <div class="bar"><div id="progress-bar" class="fill"></div></div>
+      <p id="progress-msg" class="muted"></p>
+      <button id="btn-retry" class="primary" hidden>আবার চেষ্টা করো</button>
+    </section>
+
+    <!-- 3. EDITOR -->
+    <section id="view-editor" hidden>
+      <div class="grid">
+        <div class="left">
+          <div class="card player">
+            <div class="stage">
+              <video id="video" controls playsinline preload="metadata"></video>
+              <div id="overlay" class="overlay pos-bottom pre-reels size-medium font-hind" hidden></div>
+            </div>
+            <p class="muted small">ভিডিওর ওপরের লেখা শুধু আনুমানিক প্রিভিউ। হুবহু রেজাল্ট দেখতে <b>“Frame preview”</b> চাপো।</p>
+            <img id="frame" class="frame" alt="" hidden>
+          </div>
+        </div>
+
+        <div class="right">
+          <div class="card">
+            <div class="row between">
+              <h2>২. ক্যাপশন এডিট করো</h2>
+              <span id="save-state" class="muted small"></span>
+            </div>
+            <div class="row gap">
+              <button id="btn-add" class="ghost">＋ এই সময়ে ক্যাপশন যোগ করো</button>
+              <a id="btn-srt" class="ghost btn" href="#">⬇ SRT</a>
+            </div>
+            <p id="empty" class="muted" hidden>কোনো কথা পাওয়া যায়নি। উপরের বাটনে ক্যাপশন যোগ করতে পারো।</p>
+            <div id="segs" class="segs"></div>
+          </div>
+
+          <div class="card">
+            <h2>৩. স্টাইল ও ডাউনলোড</h2>
+            <div class="form">
+              <label>স্টাইল
+                <select id="s-preset">
+                  <option value="reels">Reels Pop (হলুদ হাইলাইট)</option>
+                  <option value="classic">Classic (সাদা)</option>
+                  <option value="box">Box (ব্যাকগ্রাউন্ড বক্স)</option>
+                </select>
+              </label>
+              <label>পজিশন
+                <select id="s-position">
+                  <option value="bottom">নিচে (Reels-safe)</option>
+                  <option value="middle">মাঝে</option>
+                  <option value="top">ওপরে</option>
+                </select>
+              </label>
+              <label>সাইজ
+                <select id="s-size">
+                  <option value="small">ছোট</option>
+                  <option value="medium" selected>মাঝারি</option>
+                  <option value="large">বড়</option>
+                </select>
+              </label>
+              <label>ফন্ট
+                <select id="s-font">
+                  <option value="hind">Hind Siliguri</option>
+                  <option value="mina">Mina</option>
+                  <option value="atma">Atma</option>
+                </select>
+              </label>
+              <label class="wide"><span>একসাথে কয়টি শব্দ: <b id="s-wpc-val">3</b></span>
+                <input id="s-wpc" type="range" min="1" max="6" step="1" value="3">
+              </label>
+              <label class="check wide"><input id="s-wm" type="checkbox" checked> ওয়াটারমার্ক রাখো (“কথন দিয়ে তৈরি”)</label>
+            </div>
+            <div class="row gap">
+              <button id="btn-preview" class="ghost">🖼 Frame preview</button>
+              <button id="btn-render" class="primary">🎞 ক্যাপশনসহ ভিডিও বানাও</button>
+            </div>
+            <div id="render-box" hidden>
+              <div class="bar"><div id="render-bar" class="fill"></div></div>
+              <p id="render-msg" class="muted"></p>
+              <a id="btn-download" class="primary btn" href="#" hidden>⬇ ভিডিও ডাউনলোড (MP4)</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="muted small">কথন v<span id="ver"></span> · তোমার ভিডিও এই কম্পিউটারেই প্রসেস হয় · ফাইল স্বয়ংক্রিয়ভাবে মুছে যায়</footer>
+  <script src="/static/app.js"></script>
+</body>
+</html>

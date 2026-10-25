@@ -1,0 +1,6 @@
+# Top-level pins only (tested versions). Transitive packages (onnxruntime, ctranslate2, av ...) are
+# resolved by pip for YOUR platform - do not freeze them from another OS (Intel macOS needs older onnxruntime).
+fastapi==0.159.1
+uvicorn[standard]==0.54.0
+python-multipart==0.0.32
+faster-whisper==1.2.1

@@ -1,0 +1,30 @@
+# Python environment and cache
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Local data, uploaded videos, generated outputs and models
+data/
+*.mp4
+*.mov
+*.wav
+*.mp3
+*.m4a
+*.webm
+
+# Secrets and local environment
+.env
+.env.*
+!.env.example
+
+# Logs and local editor files
+*.log
+.DS_Store
+e2e-shots/
+
+# Temporary code backups
+*.backup
+*.backup*
+*.bak
+*.orig
